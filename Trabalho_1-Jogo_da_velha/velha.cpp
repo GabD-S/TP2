@@ -1,21 +1,9 @@
-/**
- * \file  velha.cpp
- */
-
- 
+// velha.cpp - Implementação inicial (fase RED TDD)
 #include "velha.hpp"
 
-/** 
- * @brief verifica situacao do jogo da velha  
- * @author Programador 
- * @param  velha descreve o parametro
- * 
- *  Descrever o que a funcao faz
- */ 
-
-int VerificaVelha( int velha[3][3] )
-{
-	return 0; /*!< retorna zero para teste */ 
+int verificaVelha(int tabuleiro[3][3]) {
+	(void)tabuleiro; // evita warning de parâmetro não usado nesta fase
+	return 0; // incorreto de propósito: teste espera -1 para vazio
 }
 
 
