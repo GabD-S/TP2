@@ -114,3 +114,34 @@ TEST_CASE("Impossível: todos X", "[velha][impossivel][red]") {
     REQUIRE(verificaVelha(tabuleiro) == -2);
 }
 
+TEST_CASE("Regressão: todos cenários atuais", "[velha][regressao][suite]") {
+    struct Caso {
+        int b[3][3];
+        int esperado;
+        const char* descricao;
+    };
+    std::vector<Caso> casos = {
+        // Indefinidos (-1)
+        {{{0,0,0},{0,0,0},{0,0,0}}, -1, "vazio"},
+        {{{1,0,0},{0,0,0},{0,0,0}}, -1, "primeira jogada X"},
+        {{{1,2,0},{0,0,0},{0,0,0}}, -1, "abertura X e O"},
+        {{{1,2,1},{2,0,0},{0,0,0}}, -1, "meio de jogo"},
+        {{{1,2,1},{2,1,0},{2,1,2}}, -1, "quase cheio sem vitória"},
+        // Impossíveis (-2)
+        {{{3,0,0},{0,0,0},{0,0,0}}, -2, "valor fora do domínio"},
+        {{{2,0,0},{0,0,0},{0,0,0}}, -2, "O começa"},
+        {{{1,1,1},{1,1,0},{0,0,0}}, -2, "X muito à frente"},
+        {{{1,1,1},{2,2,2},{0,0,0}}, -2, "dois vencedores"},
+        {{{1,1,1},{2,2,0},{2,0,0}}, -2, "vitória X contagem incoerente"},
+        {{{2,2,2},{1,0,0},{0,0,0}}, -2, "vitória O contagem incoerente"},
+        {{{1,1,1},{1,1,1},{1,1,1}}, -2, "todos X"}
+    };
+
+    for (const auto &c : casos) {
+        CAPTURE(c.descricao);
+        int tab[3][3];
+        for (int i=0;i<3;++i) for (int j=0;j<3;++j) tab[i][j]=c.b[i][j];
+        REQUIRE(verificaVelha(tab) == c.esperado);
+    }
+}
+
