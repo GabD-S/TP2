@@ -19,3 +19,31 @@ TEST_CASE("Jogo ainda indefinido com algumas jogadas sem vencedor", "[velha][red
     REQUIRE(verificaVelha(tabuleiro) == -1);
 }
 
+TEST_CASE("Jogo indefinido com apenas primeira jogada de X", "[velha][indefinido]") {
+    int tabuleiro[3][3] = {
+        {1, 0, 0},
+        {0, 0, 0},
+        {0, 0, 0}
+    };
+    REQUIRE(verificaVelha(tabuleiro) == -1);
+}
+
+TEST_CASE("Jogo indefinido com abertura equilibrada", "[velha][indefinido]") {
+    int tabuleiro[3][3] = {
+        {1, 0, 0},
+        {0, 2, 0},
+        {0, 0, 0}
+    };
+    REQUIRE(verificaVelha(tabuleiro) == -1);
+}
+
+TEST_CASE("Jogo indefinido quase cheio sem vitória", "[velha][indefinido]") {
+    int tabuleiro[3][3] = {
+        {1, 2, 1},
+        {2, 1, 0},
+        {2, 1, 2}
+    };
+    // Ainda há um espaço vazio (1,2) e nenhuma linha/coluna/diagonal vencedora
+    REQUIRE(verificaVelha(tabuleiro) == -1);
+}
+

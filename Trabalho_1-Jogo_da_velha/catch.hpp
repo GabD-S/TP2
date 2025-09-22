@@ -18,7 +18,7 @@
 #elif defined __GNUC__
 #    pragma GCC system_header
 #endif
- 
+
 // #included from: internal/catch_suppress_warnings.h
 
 #ifdef __clang__
