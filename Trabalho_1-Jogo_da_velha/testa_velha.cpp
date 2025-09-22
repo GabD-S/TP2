@@ -156,3 +156,69 @@ TEST_CASE("Vitória de X em linha superior", "[velha][vitoria][red]") {
     REQUIRE(verificaVelha(tabuleiro) == 1);
 }
 
+// RED 2: vitória simples de O (linha do meio) deve retornar 2
+TEST_CASE("Vitória de O em linha do meio", "[velha][vitoria][red]") {
+    int tabuleiro[3][3] = {
+        {1,1,0},
+        {2,2,2},
+        {1,0,0}
+    }; // O venceu na linha central. Contagens: X=3, O=3 (válido)
+    REQUIRE(verificaVelha(tabuleiro) == 2);
+}
+
+// Cobertura adicional de vitórias
+
+TEST_CASE("Vitória de X em coluna esquerda", "[velha][vitoria]") {
+    int tabuleiro[3][3] = {
+        {1,2,0},
+        {1,2,0},
+        {1,0,0}
+    }; // X vence na primeira coluna. Contagens X=3 O=2
+    REQUIRE(verificaVelha(tabuleiro) == VELHA_X_VENCE);
+}
+
+TEST_CASE("Vitória de O em coluna direita", "[velha][vitoria]") {
+    int tabuleiro[3][3] = {
+        {1,1,2},
+        {1,0,2},
+        {0,0,2}
+    }; // O vence na última coluna. Contagens X=3 O=3
+    REQUIRE(verificaVelha(tabuleiro) == VELHA_O_VENCE);
+}
+
+TEST_CASE("Vitória de X em diagonal principal", "[velha][vitoria]") {
+    int tabuleiro[3][3] = {
+        {1,2,0},
+        {0,1,2},
+        {0,0,1}
+    }; // X vence diagonal principal. X=3 O=2
+    REQUIRE(verificaVelha(tabuleiro) == VELHA_X_VENCE);
+}
+
+TEST_CASE("Vitória de O em diagonal secundária", "[velha][vitoria]") {
+    int tabuleiro[3][3] = {
+        {1,1,2},
+        {1,2,0},
+        {2,0,0}
+    }; // O vence diagonal secundária. X=3 O=3
+    REQUIRE(verificaVelha(tabuleiro) == VELHA_O_VENCE);
+}
+
+TEST_CASE("Vitória de X em coluna central", "[velha][vitoria]") {
+    int tabuleiro[3][3] = {
+        {2,1,0},
+        {0,1,2},
+        {0,1,0}
+    }; // X vence na coluna do meio. X=3 O=2
+    REQUIRE(verificaVelha(tabuleiro) == VELHA_X_VENCE);
+}
+
+TEST_CASE("Vitória precoce de X sem preencher todas as casas", "[velha][vitoria]") {
+    int tabuleiro[3][3] = {
+        {1,1,1},
+        {0,2,0},
+        {0,0,2}
+    }; // X vence cedo. X=3 O=2
+    REQUIRE(verificaVelha(tabuleiro) == VELHA_X_VENCE);
+}
+
