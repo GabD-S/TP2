@@ -94,3 +94,5 @@ int verificaVelha(int tabuleiro[3][3]) {
 	// 8. Demais casos (vitória ou empate) ainda não implementados => placeholder 0
 	return 0;
 }
+
+
