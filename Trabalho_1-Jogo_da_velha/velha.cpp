@@ -80,8 +80,18 @@ int verificaVelha(int tabuleiro[3][3]) {
 		return -2;
 	}
 
-	// Ainda não decidimos retornar vitória/empate; isso virá em próximos ciclos.
-	// Por enquanto, qualquer estado que não seja vazio ou impossível permanece como 0 (placeholder / indefinido provisório).
+	// 7. Caso não haja vencedor e ainda existam casas vazias => jogo indefinido (-1)
+	bool existeVazio = false;
+	for (int i = 0; i < 3 && !existeVazio; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (tabuleiro[i][j] == 0) { existeVazio = true; break; }
+		}
+	}
+	if (!xVenceu && !oVenceu && existeVazio) {
+		return -1; // indefinido (partida segue)
+	}
+
+	// 8. Demais casos (vitória ou empate) ainda não implementados => placeholder 0
 	return 0;
 }
 

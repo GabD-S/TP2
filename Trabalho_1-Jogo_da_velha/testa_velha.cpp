@@ -9,3 +9,13 @@ TEST_CASE("Tabuleiro vazio deve retornar -1 (indefinido)", "[velha][red]") {
     REQUIRE(verificaVelha(tabuleiro) == -1);
 }
 
+TEST_CASE("Jogo ainda indefinido com algumas jogadas sem vencedor", "[velha][red]") {
+    // Situação: algumas jogadas, ninguém venceu, ainda há espaços livres
+    int tabuleiro[3][3] = {
+        {1, 0, 2},
+        {0, 2, 0},
+        {0, 1, 0}
+    };
+    REQUIRE(verificaVelha(tabuleiro) == -1);
+}
+
