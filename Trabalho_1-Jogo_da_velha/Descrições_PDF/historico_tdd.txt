@@ -1,6 +1,6 @@
 # Histórico TDD - Jogo da Velha
 
-Data de atualização: 2025-09-19
+Data de atualização: 2025-09-22
 Branch atual: feature/check-undefined-game
 
 ## Etapas já realizadas
@@ -18,33 +18,47 @@ Branch atual: feature/check-undefined-game
 11. Ajuste de `velha.cpp` para usar namespace `velha_internal` em vez de namespace anônimo.
 
 ## Estado atual da função `verificaVelha`
-- Retorna -1 se tabuleiro totalmente vazio.
-- Retorna -2 para:
-  - Valores inválidos fora do conjunto {0,1,2}.
-  - Diferença de contagem de X e O que não seja permitida (X inicia: dif. > 1 ou O > X).
-  - Dois vencedores simultâneos.
-  - Vitória incompatível com contagem.
-- Retorna 0 para todos os demais casos (placeholder: ainda não diferencia vitórias, empate, outros indefinidos).
+- Retorna VELHA_INDEFINIDO (-1) para tabuleiro vazio ou estado não terminal válido.
+- Retorna VELHA_IMPOSSIVEL (-2) para:
+  - Valores fora de {0,1,2}.
+  - Diferença de contagem ilegal (O > X ou X > O + 1).
+  - X e O vencendo simultaneamente.
+  - Vitória com contagem incoerente (X venceu mas X != O + 1; O venceu mas X != O).
+- Retorna VELHA_X_VENCE (1) ou VELHA_O_VENCE (2) para vitórias válidas.
+- Retorna VELHA_EMPATE (0) para tabuleiro cheio sem vencedor.
+Constantes expostas em `velha.hpp` e helpers agora encapsulados apenas no `velha.cpp`.
 
-## Próximos passos recomendados (em ciclos TDD)
+## Ciclos posteriores concluídos
 
-Ordem sugerida de novos testes (cada um inicia com RED):
-1. RED: X vence primeira linha retorna 1.
-   GREEN: Detectar vitórias de X (linhas).
-   REFACTOR: Reuso da lógica para colunas/diagonais.
-2. RED: O vence primeira coluna retorna 2.
-   GREEN: Generalizar verificação para O.
-3. RED: X vence diagonal principal retorna 1.
-   GREEN: Implementar checagem de diagonais (se ainda não feita).
-4. RED: Empate (tabuleiro cheio sem vencedor) retorna 0.
-   GREEN: Implementar detecção de empate (nenhum vencedor e tabuleiro cheio).
-5. RED: Jogo ainda indefinido (existe espaço vazio e nenhuma impossibilidade) retorna -1.
-   GREEN: Diferenciar verdadeiros indefinidos de placeholder 0 atual.
-6. RED: Jogo impossível por dois vencedores simultâneos (caso específico adicional) retorna -2 (já coberto, mas adicionar teste explícito).
-7. RED: Jogo impossível por contagem (ex: O > X) retorna -2 (teste explícito para cobertura).
-8. REFACTOR: Extrair avaliação de estado para função auxiliar pura que retorna enum interno (para clareza e manutenção).
-9. REFACTOR: Melhorar nomes e remover magic numbers (-1, -2) via enum/constexpr (mantendo interface externa).
-10. Qualidade: Atingir >=80% cobertura com novos testes.
+1. Implementação de vitórias (retornos 1 e 2) substituindo placeholder.
+2. Introdução de constantes constexpr de estado (VELHA_*).
+3. Testes de vitórias abrangentes: linhas, colunas, diagonais, vitória precoce.
+4. Adição de testes de empate (três variações) e correção de cenário inválido (O > X) marcado inicialmente como empate.
+5. Ajuste de teste inconsistente de “vitória dupla” que representava estado impossível (diferença de contagem ilegal); substituído por caso válido adicional.
+6. Encapsulamento de helpers em namespace anônimo (remoção de exposição pública desnecessária).
+7. Limpeza do header deixando apenas a API pública mínima e as constantes.
+
+## Erros e correções documentadas
+### Teste de vitória de X inicialmente falhando (-2 em vez de 1)
+Causa: tabuleiro de teste tinha contagem incorreta (X=3, O=1) produzindo diferença >1. A lógica classificou corretamente como impossível. Solução: ajustar tabuleiro para X=3, O=2.
+
+### Teste de “vitória dupla” (linha + coluna) retornando -2
+Causa: tentativa de criar cenário com duas linhas de X simultâneas exigia número de jogadas de X muito maior que O, violando a regra X==O ou X==O+1. Implementação correta ao marcar -2. Solução: remover cenário irreal e substituir por vitória válida (coluna central).
+
+### Empate cheio retornando -2
+Causa: tabuleiro rotulado como empate tinha O > X (inviável). Função devolveu -2 corretamente. Solução: corrigir distribuição para X=5, O=4 mantendo ausência de linhas vencedoras.
+
+## Cobertura de estados garantida por testes
+- Indefinido: múltiplos cenários (vazio, meio de jogo, quase cheio).
+- Impossível: valores inválidos, O começa, diferença exagerada, múltiplos vencedores, vitórias incoerentes X/O, tabuleiro só de X.
+- Vitórias: todas as linhas (explícitas), colunas (esquerda, central, direita), diagonais (principal e secundária), vitória precoce.
+- Empate: três padrões cheios sem vitória.
+
+## Próximos passos potenciais (opcionais)
+- Medir e registrar cobertura (target >= 80%).
+- Adicionar função utilitária opcional para descrição textual do estado.
+- Criar script de integração (ex: runner simples) se requisitado.
+- Revisar se constantes devem permanecer públicas ou mover para enum class (quebraria interface atual).
 
 ## Sugestões de commits futuros (nomes)
 - RED: X wins first row should return 1
@@ -66,8 +80,8 @@ Ordem sugerida de novos testes (cada um inicia com RED):
 - Atualizar histórico sempre que um ciclo for concluído.
 - Considerar remover exposição de `velha_internal` antes da entrega final se não for exigido testar helpers separadamente.
 
-## Próximo passo imediato sugerido
-Criar teste RED para vitória de X em uma linha e garantir falha atual (retorno 0) antes de implementar vitória.
+## Situação final
+Função estabilizada, API mínima exposta, testes abrangentes passando. Pronta para merge da branch ou incrementos finais de métricas.
 
 -- Fim do arquivo --
 

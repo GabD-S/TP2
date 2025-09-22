@@ -1,7 +1,8 @@
 // velha.cpp - Expansão: validações de estados impossíveis e indefinidos
 #include "velha.hpp"
 
-namespace velha_internal {
+// Helpers internos encapsulados em namespace anônimo (não exportados)
+namespace {
 void contaJogadas(int tabuleiro[3][3], int &xCount, int &oCount, bool &temJogada) {
 	xCount = 0; oCount = 0; temJogada = false;
 	for (int i = 0; i < 3; ++i) {
@@ -35,8 +36,8 @@ bool venceuDiagonal(const int t[3][3], int p) {
 }
 bool venceu(const int t[3][3], int p) {
 	return venceuLinha(t, p) || venceuColuna(t, p) || venceuDiagonal(t, p);
-} // namespace velha_internal
 }
+} // namespace (anônimo)
 
 int verificaVelha(int tabuleiro[3][3]) {
 	// 1. Tabuleiro vazio => jogo indefinido
@@ -50,7 +51,7 @@ int verificaVelha(int tabuleiro[3][3]) {
 
 	// 2. Contagem de jogadas e validação de domínio
 	int xCount = 0, oCount = 0; bool temJogada = false;
-	velha_internal::contaJogadas(tabuleiro, xCount, oCount, temJogada);
+	contaJogadas(tabuleiro, xCount, oCount, temJogada);
 	if (xCount == -999) { // valor inválido detectado
 		return VELHA_IMPOSSIVEL; // impossível
 	}
@@ -62,8 +63,8 @@ int verificaVelha(int tabuleiro[3][3]) {
 	}
 
 	// 4. Verificar vencedores
-	bool xVenceu = velha_internal::venceu(tabuleiro, 1);
-	bool oVenceu = velha_internal::venceu(tabuleiro, 2);
+	bool xVenceu = venceu(tabuleiro, 1);
+	bool oVenceu = venceu(tabuleiro, 2);
 
 	// 5. Dois vencedores simultâneos => impossível
 	if (xVenceu && oVenceu) {

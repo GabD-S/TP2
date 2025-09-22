@@ -19,15 +19,8 @@ constexpr int VELHA_IMPOSSIVEL = -2;
 
 int verificaVelha(int tabuleiro[3][3]);
 
-// Helpers expostos opcionalmente para facilitar testes unitários mais granulares
-// (Podem ser omitidos na entrega final se desejado manter API mínima)
-namespace velha_internal {
-	void contaJogadas(int tabuleiro[3][3], int &xCount, int &oCount, bool &temJogada);
-	bool venceuLinha(const int t[3][3], int p);
-	bool venceuColuna(const int t[3][3], int p);
-	bool venceuDiagonal(const int t[3][3], int p);
-	bool venceu(const int t[3][3], int p);
-}
+// Helpers internos foram encapsulados no arquivo de implementação (velha.cpp)
+// para manter a API pública mínima e permitir refatorações internas sem quebrar usuários.
 
 #endif // VELHA_HPP
 
