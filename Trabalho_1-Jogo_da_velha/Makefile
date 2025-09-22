@@ -57,6 +57,11 @@ debug: $(EXEC)
 all-checks: test cppcheck cpplint coverage valgrind
 	@echo "=== Todas as verificações concluídas ==="
 
+# Executa testes e grava saída completa em all_tests.txt
+all-tests-log: $(EXEC)
+	./$(EXEC) > all_tests.txt 2>&1 || true
+	@echo "Saída dos testes registrada em all_tests.txt"
+
 clean:
 	rm -f *.o *.gcno *.gcda *.gcov $(EXEC) valgrind.rpt
 
