@@ -46,19 +46,19 @@ int verificaVelha(int tabuleiro[3][3]) {
 			if (tabuleiro[i][j] != 0) { vazio = false; break; }
 		}
 	}
-	if (vazio) return -1;
+	if (vazio) return VELHA_INDEFINIDO;
 
 	// 2. Contagem de jogadas e validação de domínio
 	int xCount = 0, oCount = 0; bool temJogada = false;
 	velha_internal::contaJogadas(tabuleiro, xCount, oCount, temJogada);
 	if (xCount == -999) { // valor inválido detectado
-		return -2; // impossível
+		return VELHA_IMPOSSIVEL; // impossível
 	}
 
 	// 3. Diferença de contagem inválida: X inicia, logo:
 	//    xCount == oCount  OU  xCount == oCount + 1 é válido
 	if (!(xCount == oCount || xCount == oCount + 1)) {
-		return -2; // impossível
+		return VELHA_IMPOSSIVEL; // impossível
 	}
 
 	// 4. Verificar vencedores
@@ -67,17 +67,17 @@ int verificaVelha(int tabuleiro[3][3]) {
 
 	// 5. Dois vencedores simultâneos => impossível
 	if (xVenceu && oVenceu) {
-		return -2;
+		return VELHA_IMPOSSIVEL;
 	}
 
 	// 6. Coerência entre vitória e contagem
 	//    - Se X venceu: xCount deve ser oCount + 1
 	if (xVenceu && xCount != oCount + 1) {
-		return -2;
+		return VELHA_IMPOSSIVEL;
 	}
 	//    - Se O venceu: xCount deve ser oCount (porque X sempre joga primeiro)
 	if (oVenceu && xCount != oCount) {
-		return -2;
+		return VELHA_IMPOSSIVEL;
 	}
 
 	// 7. Caso não haja vencedor e ainda existam casas vazias => jogo indefinido (-1)
@@ -88,11 +88,13 @@ int verificaVelha(int tabuleiro[3][3]) {
 		}
 	}
 	if (!xVenceu && !oVenceu && existeVazio) {
-		return -1; // indefinido (partida segue)
+		return VELHA_INDEFINIDO; // indefinido (partida segue)
 	}
 
-	// 8. Demais casos (vitória ou empate) ainda não implementados => placeholder 0
-	return 0;
+	// 8. Determinar estado final: vitória ou empate
+	if (xVenceu) return VELHA_X_VENCE;
+	if (oVenceu) return VELHA_O_VENCE;
+	return VELHA_EMPATE; // tabuleiro cheio sem vencedor
 }
 
 

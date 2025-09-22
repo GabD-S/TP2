@@ -10,6 +10,13 @@
 #ifndef VELHA_HPP
 #define VELHA_HPP
 
+// Códigos de estado (expostos para clareza e eventual reuso externo)
+constexpr int VELHA_X_VENCE    = 1;
+constexpr int VELHA_O_VENCE    = 2;
+constexpr int VELHA_EMPATE     = 0;
+constexpr int VELHA_INDEFINIDO = -1;
+constexpr int VELHA_IMPOSSIVEL = -2;
+
 int verificaVelha(int tabuleiro[3][3]);
 
 // Helpers expostos opcionalmente para facilitar testes unitários mais granulares

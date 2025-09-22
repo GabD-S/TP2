@@ -70,3 +70,180 @@ Ordem sugerida de novos testes (cada um inicia com RED):
 Criar teste RED para vitória de X em uma linha e garantir falha atual (retorno 0) antes de implementar vitória.
 
 -- Fim do arquivo --
+
+
+
+RED: adicionar teste para vitória simples de X (ex: linha 0: {1,1,1}) esperando retorno 1.
+GREEN: alterar o bloco final de verificaVelha para:
+if (xVenceu) return 1;
+if (oVenceu) return 2;
+if (!existeVazio) return 0; // empate
+RED: adicionar teste para vitória de O (com contagem coerente).
+GREEN: já deverá passar.
+RED: adicionar vitória em coluna e diagonal (garante cobertura de todas as formas).
+Refactor: possivelmente extrair enum interno ou constantes constexpr int VITORIA_X = 1; etc., e remover placeholder.
+
+
+---------------------------
+
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g -c velha.cpp -o velha.o
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (12 assertions in 12 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (24 assertions in 13 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ g++ -std=c++11 -Wall -Wextra -g -DVELHA_INLINE_TEST -c /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha/velha.cpp
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g -c velha.cpp -o velha.o
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+testa_velha is a Catch v1.12.1 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+Vitória de X em linha superior
+-------------------------------------------------------------------------------
+testa_velha.cpp:150
+...............................................................................
+
+testa_velha.cpp:156: FAILED:
+  REQUIRE( verificaVelha(tabuleiro) == 1 )
+with expansion:
+  -2 == 1
+
+===============================================================================
+test cases: 14 | 13 passed | 1 failed
+assertions: 25 | 24 passed | 1 failed
+
+make: *** [Makefile:35: test] Error 1
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g -c velha.cpp -o velha.o
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+testa_velha is a Catch v1.12.1 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+Vitória de X em linha superior
+-------------------------------------------------------------------------------
+testa_velha.cpp:150
+...............................................................................
+
+testa_velha.cpp:156: FAILED:
+  REQUIRE( verificaVelha(tabuleiro) == 1 )
+with expansion:
+  -2 == 1
+
+===============================================================================
+test cases: 14 | 13 passed | 1 failed
+assertions: 25 | 24 passed | 1 failed
+
+make: *** [Makefile:35: test] Error 1
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (25 assertions in 14 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ ^C
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ ^C
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g -c velha.cpp -o velha.o
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (26 assertions in 15 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+testa_velha is a Catch v1.12.1 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+Vitória dupla de X (duas linhas formadas no mesmo lance)
+-------------------------------------------------------------------------------
+testa_velha.cpp:207
+...............................................................................
+
+testa_velha.cpp:232: FAILED:
+  REQUIRE( verificaVelha(final) == VELHA_X_VENCE )
+with expansion:
+  -2 == 1
+
+===============================================================================
+test cases: 21 | 20 passed | 1 failed
+assertions: 32 | 31 passed | 1 failed
+
+make: *** [Makefile:35: test] Error 1
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (32 assertions in 21 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ ^C
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ ^C
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+testa_velha is a Catch v1.12.1 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+Empate cheio sem diagonais vencedoras
+-------------------------------------------------------------------------------
+testa_velha.cpp:247
+...............................................................................
+
+testa_velha.cpp:253: FAILED:
+  REQUIRE( verificaVelha(tabuleiro) == VELHA_EMPATE )
+with expansion:
+  -2 == 0
+
+===============================================================================
+test cases: 24 | 23 passed | 1 failed
+assertions: 35 | 34 passed | 1 failed
+
+make: *** [Makefile:35: test] Error 1
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (35 assertions in 24 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
