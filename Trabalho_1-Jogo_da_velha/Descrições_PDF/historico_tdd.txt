@@ -70,3 +70,15 @@ Ordem sugerida de novos testes (cada um inicia com RED):
 Criar teste RED para vitória de X em uma linha e garantir falha atual (retorno 0) antes de implementar vitória.
 
 -- Fim do arquivo --
+
+
+
+RED: adicionar teste para vitória simples de X (ex: linha 0: {1,1,1}) esperando retorno 1.
+GREEN: alterar o bloco final de verificaVelha para:
+if (xVenceu) return 1;
+if (oVenceu) return 2;
+if (!existeVazio) return 0; // empate
+RED: adicionar teste para vitória de O (com contagem coerente).
+GREEN: já deverá passar.
+RED: adicionar vitória em coluna e diagonal (garante cobertura de todas as formas).
+Refactor: possivelmente extrair enum interno ou constantes constexpr int VITORIA_X = 1; etc., e remover placeholder.
