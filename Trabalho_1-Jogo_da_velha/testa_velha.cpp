@@ -150,9 +150,9 @@ TEST_CASE("Regressão: todos cenários atuais", "[velha][regressao][suite]") {
 TEST_CASE("Vitória de X em linha superior", "[velha][vitoria][red]") {
     int tabuleiro[3][3] = {
         {1,1,1},
-        {2,0,0},
+        {2,2,0},
         {0,0,0}
-    }; // X venceu na primeira linha, contagens: X=3, O=1 -> válido
+    }; // X venceu na primeira linha, contagens: X=3, O=2 (estado legal)
     REQUIRE(verificaVelha(tabuleiro) == 1);
 }
 
