@@ -222,3 +222,34 @@ TEST_CASE("Vitória precoce de X sem preencher todas as casas", "[velha][vitoria
     REQUIRE(verificaVelha(tabuleiro) == VELHA_X_VENCE);
 }
 
+// =============================
+// Empates
+// =============================
+
+TEST_CASE("Empate clássico sem vencedores", "[velha][empate]") {
+    int tabuleiro[3][3] = {
+        {1,2,1},
+        {1,2,2},
+        {2,1,1}
+    }; // Cheio, nenhum 3-em-linha
+    REQUIRE(verificaVelha(tabuleiro) == VELHA_EMPATE);
+}
+
+TEST_CASE("Empate alternativo distribuído", "[velha][empate]") {
+    int tabuleiro[3][3] = {
+        {2,1,2},
+        {2,1,1},
+        {1,2,1}
+    }; // Cheio, sem linhas/colunas/diagonais vencedoras
+    REQUIRE(verificaVelha(tabuleiro) == VELHA_EMPATE);
+}
+
+TEST_CASE("Empate cheio sem diagonais vencedoras", "[velha][empate]") {
+    int tabuleiro[3][3] = {
+        {1,2,1},
+        {1,1,2},
+        {2,1,2}
+    }; // Ajustado: X=5 O=4, cheio, sem três em linha
+    REQUIRE(verificaVelha(tabuleiro) == VELHA_EMPATE);
+}
+
