@@ -1,0 +1,105 @@
+        -:    0:Source:velha.cpp
+        -:    0:Graph:velha.gcno
+        -:    0:Data:velha.gcda
+        -:    0:Runs:1
+        -:    1:// velha.cpp - Expansão: validações de estados impossíveis e indefinidos
+        -:    2:#include "velha.hpp"
+        -:    3:
+        -:    4:// Helpers internos encapsulados em namespace anônimo (não exportados)
+        -:    5:namespace {
+       33:    6:void contaJogadas(int tabuleiro[3][3], int &xCount, int &oCount, bool &temJogada) {
+       33:    7:	xCount = 0; oCount = 0; temJogada = false;
+      126:    8:	for (int i = 0; i < 3; ++i) {
+      374:    9:		for (int j = 0; j < 3; ++j) {
+      281:   10:			int v = tabuleiro[i][j];
+      281:   11:			if (v == 1) { ++xCount; temJogada = true; }
+      184:   12:			else if (v == 2) { ++oCount; temJogada = true; }
+      119:   13:			else if (v != 0) { // valor inválido fora do domínio
+        -:   14:				// Tratar como impossível imediatamente via marcação especial
+        2:   15:				xCount = -999; oCount = -999; return;
+        -:   16:			}
+        -:   17:		}
+        -:   18:	}
+        -:   19:}
+        -:   20:
+       46:   21:bool venceuLinha(const int t[3][3], int p) {
+      160:   22:	for (int i = 0; i < 3; ++i) {
+      123:   23:		if (t[i][0] == p && t[i][1] == p && t[i][2] == p) return true;
+        -:   24:	}
+       37:   25:	return false;
+        -:   26:}
+       37:   27:bool venceuColuna(const int t[3][3], int p) {
+      142:   28:	for (int j = 0; j < 3; ++j) {
+      108:   29:		if (t[0][j] == p && t[1][j] == p && t[2][j] == p) return true;
+        -:   30:	}
+       34:   31:	return false;
+        -:   32:}
+       34:   33:bool venceuDiagonal(const int t[3][3], int p) {
+       67:   34:	return (t[0][0] == p && t[1][1] == p && t[2][2] == p) ||
+       67:   35:		   (t[0][2] == p && t[1][1] == p && t[2][0] == p);
+        -:   36:}
+       46:   37:bool venceu(const int t[3][3], int p) {
+       46:   38:	return venceuLinha(t, p) || venceuColuna(t, p) || venceuDiagonal(t, p);
+        -:   39:}
+        -:   40:} // namespace (anônimo)
+        -:   41:
+       35:   42:int verificaVelha(int tabuleiro[3][3]) {
+        -:   43:	// 1. Tabuleiro vazio => jogo indefinido
+       35:   44:	bool vazio = true;
+       74:   45:	for (int i = 0; i < 3 && vazio; ++i) {
+       57:   46:		for (int j = 0; j < 3; ++j) {
+       51:   47:			if (tabuleiro[i][j] != 0) { vazio = false; break; }
+        -:   48:		}
+        -:   49:	}
+       35:   50:	if (vazio) return VELHA_INDEFINIDO;
+        -:   51:
+        -:   52:	// 2. Contagem de jogadas e validação de domínio
+       33:   53:	int xCount = 0, oCount = 0; bool temJogada = false;
+       33:   54:	contaJogadas(tabuleiro, xCount, oCount, temJogada);
+       33:   55:	if (xCount == -999) { // valor inválido detectado
+        2:   56:		return VELHA_IMPOSSIVEL; // impossível
+        -:   57:	}
+        -:   58:
+        -:   59:	// 3. Diferença de contagem inválida: X inicia, logo:
+        -:   60:	//    xCount == oCount  OU  xCount == oCount + 1 é válido
+       31:   61:	if (!(xCount == oCount || xCount == oCount + 1)) {
+        8:   62:		return VELHA_IMPOSSIVEL; // impossível
+        -:   63:	}
+        -:   64:
+        -:   65:	// 4. Verificar vencedores
+       23:   66:	bool xVenceu = venceu(tabuleiro, 1);
+       23:   67:	bool oVenceu = venceu(tabuleiro, 2);
+        -:   68:
+        -:   69:	// 5. Dois vencedores simultâneos => impossível
+       23:   70:	if (xVenceu && oVenceu) {
+        2:   71:		return VELHA_IMPOSSIVEL;
+        -:   72:	}
+        -:   73:
+        -:   74:	// 6. Coerência entre vitória e contagem
+        -:   75:	//    - Se X venceu: xCount deve ser oCount + 1
+       21:   76:	if (xVenceu && xCount != oCount + 1) {
+        2:   77:		return VELHA_IMPOSSIVEL;
+        -:   78:	}
+        -:   79:	//    - Se O venceu: xCount deve ser oCount (porque X sempre joga primeiro)
+       19:   80:	if (oVenceu && xCount != oCount) {
+    #####:   81:		return VELHA_IMPOSSIVEL;
+        -:   82:	}
+        -:   83:
+        -:   84:	// 7. Caso não haja vencedor e ainda existam casas vazias => jogo indefinido (-1)
+       19:   85:	bool existeVazio = false;
+       51:   86:	for (int i = 0; i < 3 && !existeVazio; ++i) {
+      104:   87:		for (int j = 0; j < 3; ++j) {
+       88:   88:			if (tabuleiro[i][j] == 0) { existeVazio = true; break; }
+        -:   89:		}
+        -:   90:	}
+       19:   91:	if (!xVenceu && !oVenceu && existeVazio) {
+        8:   92:		return VELHA_INDEFINIDO; // indefinido (partida segue)
+        -:   93:	}
+        -:   94:
+        -:   95:	// 8. Determinar estado final: vitória ou empate
+       11:   96:	if (xVenceu) return VELHA_X_VENCE;
+        6:   97:	if (oVenceu) return VELHA_O_VENCE;
+        3:   98:	return VELHA_EMPATE; // tabuleiro cheio sem vencedor
+        -:   99:}
+        -:  100:
+        -:  101:
