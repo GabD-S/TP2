@@ -1,0 +1,99 @@
+JOGO DA VELHA - INSTRUÇÕES DE COMPILAÇÃO E EXECUÇÃO (TDD)
+=========================================================
+
+Arquivos principais:
+- velha.hpp / velha.cpp : implementação da lógica de verificação
+- testa_velha.cpp       : casos de teste (Catch2 single-header em catch.hpp)
+- Makefile              : automatiza build e ferramentas
+- cpplint.py            : verificação de estilo Google
+- Descrições_PDF/       : especificação e histórico TDD
+
+Retornos da função verificaVelha:
+ 1  -> X venceu
+ 2  -> O venceu
+ 0  -> Empate
+-1  -> Jogo indefinido
+-2  -> Jogo impossível
+
+========================
+COMPILAÇÃO BÁSICA
+========================
+Dentro da pasta do projeto:
+  make
+Gera o executável de testes: ./testa_velha
+
+========================
+EXECUTAR TESTES
+========================
+  make test
+Ou diretamente:
+  ./testa_velha
+
+========================
+GERAR ARQUIVO COM SAÍDA DOS TESTES
+========================
+Use o alvo dedicado:
+  make all-tests-log
+Isto executa os testes e grava a saída completa em all_tests.txt
+
+Após isso:
+  cat all_tests.txt
+
+Também pode redirecionar manualmente:
+  ./testa_velha > all_tests.txt 2>&1
+
+========================
+COBERTURA DE CÓDIGO
+========================
+  make coverage
+Gera arquivos .gcov (ex: velha.cpp.gcov). Abra-os para ver linhas (##### não coberta).
+
+Para garantir critério mínimo (>=80% linhas executadas) use:
+  make coverage-check
+Este alvo falha (retorno diferente de 0) se a cobertura ficar abaixo do limite.
+
+========================
+ANÁLISE ESTÁTICA
+========================
+  make cppcheck
+
+========================
+ESTILO (Google Style)
+========================
+  make cpplint
+
+========================
+VALGRIND (Memória)
+========================
+  make valgrind
+
+========================
+DEPURAÇÃO (GDB)
+========================
+  make debug
+
+========================
+EXECUÇÃO COMPLETA DE QUALIDADE
+========================
+  make all-checks
+(Executa: testes, cppcheck, cpplint, coverage-check e valgrind)
+
+========================
+LIMPEZA
+========================
+  make clean
+Remove objetos, artefatos de cobertura e binário de teste.
+
+========================
+ESTRATÉGIA TDD (Resumo)
+========================
+Cada novo comportamento:
+  1. Criar teste (RED)
+  2. Implementar mínimo (GREEN)
+  3. Refatorar (REFACTOR)
+
+========================
+ARQUIVO GERADO
+========================
+Este arquivo (leima.txt) foi criado para orientar a execução e registrar o processo.
+

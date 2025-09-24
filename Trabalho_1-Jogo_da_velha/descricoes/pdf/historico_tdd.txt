@@ -1,0 +1,263 @@
+# Histórico TDD - Jogo da Velha
+
+Data de atualização: 2025-09-22
+Branch atual: feature/check-undefined-game
+
+## Etapas já realizadas
+
+1. Estrutura inicial recomposta após perda de arquivos.
+2. Reescrita do Makefile com targets: test, coverage, cppcheck, cpplint, valgrind, debug, all-checks, clean.
+3. Criação do header `velha.hpp` com documentação e guarda de inclusão.
+4. Implementação RED inicial: `verificaVelha` retornava 0; teste do tabuleiro vazio esperando -1.
+5. GREEN: Implementação detecção de tabuleiro vazio retornando -1 (estado indefinido).
+6. Expansão de lógica para casos impossíveis: contagem inválida, valores fora do domínio, diferença de jogadas ilegal.
+7. Detecção de múltiplos vencedores simultâneos (impossível -> -2).
+8. Verificação de coerência entre vitória e contagem (X vence => X = O + 1; O vence => X = O).
+9. Refatoração: extração de helpers internos (contaJogadas, venceuLinha, venceuColuna, venceuDiagonal, venceu) inicialmente em namespace anônimo.
+10. Exposição opcional dos helpers via namespace `velha_internal` em `velha.hpp` para permitir testes granulares e facilitar manutenção.
+11. Ajuste de `velha.cpp` para usar namespace `velha_internal` em vez de namespace anônimo.
+
+## Estado atual da função `verificaVelha`
+- Retorna VELHA_INDEFINIDO (-1) para tabuleiro vazio ou estado não terminal válido.
+- Retorna VELHA_IMPOSSIVEL (-2) para:
+  - Valores fora de {0,1,2}.
+  - Diferença de contagem ilegal (O > X ou X > O + 1).
+  - X e O vencendo simultaneamente.
+  - Vitória com contagem incoerente (X venceu mas X != O + 1; O venceu mas X != O).
+- Retorna VELHA_X_VENCE (1) ou VELHA_O_VENCE (2) para vitórias válidas.
+- Retorna VELHA_EMPATE (0) para tabuleiro cheio sem vencedor.
+Constantes expostas em `velha.hpp` e helpers agora encapsulados apenas no `velha.cpp`.
+
+## Ciclos posteriores concluídos
+
+1. Implementação de vitórias (retornos 1 e 2) substituindo placeholder.
+2. Introdução de constantes constexpr de estado (VELHA_*).
+3. Testes de vitórias abrangentes: linhas, colunas, diagonais, vitória precoce.
+4. Adição de testes de empate (três variações) e correção de cenário inválido (O > X) marcado inicialmente como empate.
+5. Ajuste de teste inconsistente de “vitória dupla” que representava estado impossível (diferença de contagem ilegal); substituído por caso válido adicional.
+6. Encapsulamento de helpers em namespace anônimo (remoção de exposição pública desnecessária).
+7. Limpeza do header deixando apenas a API pública mínima e as constantes.
+
+## Erros e correções documentadas
+### Teste de vitória de X inicialmente falhando (-2 em vez de 1)
+Causa: tabuleiro de teste tinha contagem incorreta (X=3, O=1) produzindo diferença >1. A lógica classificou corretamente como impossível. Solução: ajustar tabuleiro para X=3, O=2.
+
+### Teste de “vitória dupla” (linha + coluna) retornando -2
+Causa: tentativa de criar cenário com duas linhas de X simultâneas exigia número de jogadas de X muito maior que O, violando a regra X==O ou X==O+1. Implementação correta ao marcar -2. Solução: remover cenário irreal e substituir por vitória válida (coluna central).
+
+### Empate cheio retornando -2
+Causa: tabuleiro rotulado como empate tinha O > X (inviável). Função devolveu -2 corretamente. Solução: corrigir distribuição para X=5, O=4 mantendo ausência de linhas vencedoras.
+
+## Cobertura de estados garantida por testes
+- Indefinido: múltiplos cenários (vazio, meio de jogo, quase cheio).
+- Impossível: valores inválidos, O começa, diferença exagerada, múltiplos vencedores, vitórias incoerentes X/O, tabuleiro só de X.
+- Vitórias: todas as linhas (explícitas), colunas (esquerda, central, direita), diagonais (principal e secundária), vitória precoce.
+- Empate: três padrões cheios sem vitória.
+
+## Próximos passos potenciais (opcionais)
+- Medir e registrar cobertura (target >= 80%).
+- Adicionar função utilitária opcional para descrição textual do estado.
+- Criar script de integração (ex: runner simples) se requisitado.
+- Revisar se constantes devem permanecer públicas ou mover para enum class (quebraria interface atual).
+
+## Sugestões de commits futuros (nomes)
+- RED: X wins first row should return 1
+- GREEN: Implement row win detection for X
+- REFACTOR: Unify row/column win checks
+- RED: O wins first column should return 2
+- GREEN: Implement column win detection for O
+- RED: X wins main diagonal should return 1
+- GREEN: Implement diagonal win detection
+- RED: Draw board should return 0
+- GREEN: Implement draw detection
+- RED: Non-terminal board should return -1
+- GREEN: Implement non-terminal detection
+- REFACTOR: Extract state evaluation helper
+- REFACTOR: Replace literals -1/-2 with internal enum
+
+## Observações
+- Manter granularidade dos commits (RED → GREEN → REFACTOR).
+- Atualizar histórico sempre que um ciclo for concluído.
+- Considerar remover exposição de `velha_internal` antes da entrega final se não for exigido testar helpers separadamente.
+
+## Situação final
+Função estabilizada, API mínima exposta, testes abrangentes passando. Pronta para merge da branch ou incrementos finais de métricas.
+
+-- Fim do arquivo --
+
+
+
+RED: adicionar teste para vitória simples de X (ex: linha 0: {1,1,1}) esperando retorno 1.
+GREEN: alterar o bloco final de verificaVelha para:
+if (xVenceu) return 1;
+if (oVenceu) return 2;
+if (!existeVazio) return 0; // empate
+RED: adicionar teste para vitória de O (com contagem coerente).
+GREEN: já deverá passar.
+RED: adicionar vitória em coluna e diagonal (garante cobertura de todas as formas).
+Refactor: possivelmente extrair enum interno ou constantes constexpr int VITORIA_X = 1; etc., e remover placeholder.
+
+
+---------------------------
+
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g -c velha.cpp -o velha.o
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (12 assertions in 12 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (24 assertions in 13 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ g++ -std=c++11 -Wall -Wextra -g -DVELHA_INLINE_TEST -c /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha/velha.cpp
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g -c velha.cpp -o velha.o
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+testa_velha is a Catch v1.12.1 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+Vitória de X em linha superior
+-------------------------------------------------------------------------------
+testa_velha.cpp:150
+...............................................................................
+
+testa_velha.cpp:156: FAILED:
+  REQUIRE( verificaVelha(tabuleiro) == 1 )
+with expansion:
+  -2 == 1
+
+===============================================================================
+test cases: 14 | 13 passed | 1 failed
+assertions: 25 | 24 passed | 1 failed
+
+make: *** [Makefile:35: test] Error 1
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g -c velha.cpp -o velha.o
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+testa_velha is a Catch v1.12.1 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+Vitória de X em linha superior
+-------------------------------------------------------------------------------
+testa_velha.cpp:150
+...............................................................................
+
+testa_velha.cpp:156: FAILED:
+  REQUIRE( verificaVelha(tabuleiro) == 1 )
+with expansion:
+  -2 == 1
+
+===============================================================================
+test cases: 14 | 13 passed | 1 failed
+assertions: 25 | 24 passed | 1 failed
+
+make: *** [Makefile:35: test] Error 1
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (25 assertions in 14 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ ^C
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ ^C
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g -c velha.cpp -o velha.o
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (26 assertions in 15 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+testa_velha is a Catch v1.12.1 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+Vitória dupla de X (duas linhas formadas no mesmo lance)
+-------------------------------------------------------------------------------
+testa_velha.cpp:207
+...............................................................................
+
+testa_velha.cpp:232: FAILED:
+  REQUIRE( verificaVelha(final) == VELHA_X_VENCE )
+with expansion:
+  -2 == 1
+
+===============================================================================
+test cases: 21 | 20 passed | 1 failed
+assertions: 32 | 31 passed | 1 failed
+
+make: *** [Makefile:35: test] Error 1
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (32 assertions in 21 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ ^C
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ ^C
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+testa_velha is a Catch v1.12.1 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+Empate cheio sem diagonais vencedoras
+-------------------------------------------------------------------------------
+testa_velha.cpp:247
+...............................................................................
+
+testa_velha.cpp:253: FAILED:
+  REQUIRE( verificaVelha(tabuleiro) == VELHA_EMPATE )
+with expansion:
+  -2 == 0
+
+===============================================================================
+test cases: 24 | 23 passed | 1 failed
+assertions: 35 | 34 passed | 1 failed
+
+make: *** [Makefile:35: test] Error 1
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
+make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
+g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
+./testa_velha
+===============================================================================
+All tests passed (35 assertions in 24 test cases)
+
+make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
