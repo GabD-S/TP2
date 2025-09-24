@@ -6,6 +6,7 @@ g++ -std=c++11 -Wall -Wextra -g velha.o testa_velha.cpp -o testa_velha
 ===============================================================================
 All tests passed (12 assertions in 12 test cases)
 
+
 make: Leaving directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
 gabriel_pc@MacGab:~/Testes/cpp/TP2$ make -C /home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha test
 make: Entering directory '/home/gabriel_pc/Testes/cpp/TP2/Trabalho_1-Jogo_da_velha'
