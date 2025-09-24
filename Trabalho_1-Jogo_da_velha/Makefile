@@ -4,6 +4,7 @@
 #   make            -> compila binário
 #   make test       -> executa testes
 #   make coverage   -> gcov
+#   make coverage-check -> cobra >=80% linhas
 #   make cppcheck   -> análise estática
 #   make cpplint    -> estilo Google
 #   make valgrind   -> checagem memória
@@ -21,7 +22,7 @@ OBJECTS   = $(SOURCES:.cpp=.o)
 TEST_SRC  = testa_velha.cpp
 EXEC      = testa_velha
 
-.PHONY: all test coverage cppcheck cpplint valgrind debug all-checks clean
+.PHONY: all test coverage coverage-check cppcheck cpplint valgrind debug all-checks clean
 
 all: $(EXEC)
 
@@ -48,13 +49,25 @@ coverage: clean
 	@echo "Arquivos .gcov gerados:"
 	@ls -1 *.gcov
 
+# Verifica cobertura mínima (>=80%). Falha se abaixo.
+coverage-check: clean
+	@echo "[coverage-check] Gerando dados de cobertura..."
+	$(CXX) $(CXXFLAGS) $(COVFLAGS) -c velha.cpp
+	$(CXX) $(CXXFLAGS) $(COVFLAGS) velha.o $(TEST_SRC) -o $(EXEC) $(LDFLAGS)
+	./$(EXEC) > /dev/null
+	@OUT=$$(gcov $(SOURCES) 2>/dev/null | grep 'Lines executed' | head -n1); \
+	 PCT=$$(echo "$$OUT" | sed -E 's/.*Lines executed:([0-9]+\.?[0-9]*)%.*/\1/'); \
+	 echo "Cobertura de linhas: $$PCT%"; \
+	 MIN=80; \
+	 awk -v p=$$PCT -v m=$$MIN 'BEGIN{ if (p+0 < m) { printf("Falha: cobertura %.2f%% < %d%%\n", p, m); exit 1 } else { printf("OK: cobertura %.2f%% >= %d%%\n", p, m); }}'
+
 valgrind: $(EXEC)
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(EXEC)
 
 debug: $(EXEC)
 	gdb ./$(EXEC)
 
-all-checks: test cppcheck cpplint coverage valgrind
+all-checks: test cppcheck cpplint coverage-check valgrind
 	@echo "=== Todas as verificações concluídas ==="
 
 # Executa testes e grava saída completa em all_tests.txt
